@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
---
+-- MADE BY GABRIEL CLOUTIER ON 6TH APRIL 2017
 -- main.lua
 --
 -- !important display.newImageRect( [parent,] filename, [baseDir,] width, height ) pour les images
 -- arrayIndex =((arrayIndex+1)%3)+1 -- permet de naviguer de 3,2,1
 -- self.fonction() C'EST MAL ----> self:fonction ---> C'EST BIEN
+-- https://coronalabs.com/blog/2014/03/25/tutorial-using-particle-designer-in-corona/
+-- http://onebyonedesign.com/flash/particleeditor/
 -----------------------------------------------------------------------------------------
 
 -- local machineInterface = require('classe_interface')
@@ -25,7 +27,6 @@ function circleEtatTouch:init()
     self:insert(circle)
 end
 function circleEtatTouch:touch(e)
-    print('bleugh')
     if e.phase == 'began' then 
         perso:changerEtat()        
     end -- if began
@@ -37,7 +38,7 @@ function perso:init() -- déclaration de la fonction init
     -- graphique 
     self.circle = display.newCircle(0,display.contentHeight/2+display.contentWidth/2,50)
     self.circle: setFillColor(0.9,0.3,0.8) 
-    self:insert(self.circle)
+    self:insert(self.circle) -- insère le cercle dans le groupe parce que le cercle et perso sont deus entités différentes
     -- mouvement
     self.currentPos = 2
     self.tPositions = {display.contentWidth/2-display.contentWidth/3,display.contentWidth/2,display.contentWidth/2+display.contentWidth/3} -- {128, 384, 640}
