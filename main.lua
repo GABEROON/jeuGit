@@ -23,8 +23,9 @@ local perso = mPerso:new()
 --------------------------------------------------------- OBSTACLE -----------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------
 local mObstacle = require('classe_obstacle')
+
 local function spawn()
-       mObstacle:new()--self:spawn() 
+    local obstacle = mObstacle:new()--self:spawn() 
 end
 timer.performWithDelay(200,spawn,-1) -- à chaque seconde, appelle la fonction spawn et répète à l'infini
 
