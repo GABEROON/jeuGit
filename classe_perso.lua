@@ -9,15 +9,15 @@ function mPerso:new()
     function perso:init() -- déclaration de la fonction init
         -- graphique 
         self.CBE = require("CBE.CBE")
-        --local particleDesigner = require('particleDesigner')
-        --local emitter = particleDesigner.newEmitter('emitter.rg')
+        --self.CBE.listPresets()
 
-        self.CBE.listPresets()
-        -- emitter.x = self.x
-        self.circle = display.newCircle(0,0,50)
-        self.circle: setFillColor(0.9,0.3,0.8) 
+
+
+        self.radius = 50
+        self.circle = display.newCircle(0,0,self.radius)
+        self.circle: setFillColor(1,0,0) 
         self:insert(self.circle) -- insère le cercle dans le groupe parce que le cercle et perso sont deus entités différentes
-        --self:insert(emitter) -- insère le cercle dans le groupe parce que le cercle et perso sont deus entités différentes
+
 
         -- mouvement
         self.currentPos = 2
@@ -26,22 +26,28 @@ function mPerso:new()
         self.vitesse = 5
         self.x = self.tPositions[2] -- set le x à la colonne du centre
         self.endX = self.x
-        self.y = display.contentHeight/2+display.contentWidth/2        
-        -- etat
-        -- self.tEtat = {1,2,3}
+        self.y = display.contentHeight/2+display.contentWidth/10 
+
+        --etat
         self.currentEtat = 1
+
+        --physX
+        physics.addBody(self, {density = 1, radius = self.radius, bounce = 1});
+        self.gravityScale = 0
+        -- physics.setDrawMode('hybrid');
 
         self.vent = self.CBE.newVent({
                 preset = "fountain",
 
                 physics = {
-                    angles = {{80, 100}},
+                    angles = {{0, 360}},
                     scaleRateX = 0.98,
                     scaleRateY = 0.98,
                     gravityY = 0.3
                 }
             })
-        
+
+
 
 
     end
@@ -49,13 +55,13 @@ function mPerso:new()
     function perso:changerEtat()
         if self.currentEtat == 3 then
             self.currentEtat = self.currentEtat -2
-            self.circle: setFillColor(0.6,0.1,0.2) 
+            self.circle: setFillColor(1,0,0) 
         elseif self.currentEtat == 2 then
             self.currentEtat = self.currentEtat+1 
-            self.circle: setFillColor(0.1,0.9,0.3) 
+            self.circle: setFillColor(0,1,0) 
         elseif self.currentEtat == 1 then
             self.currentEtat = self.currentEtat+1 
-            self.circle: setFillColor(0.7,0.2,0.6) 
+            self.circle: setFillColor(0,0,1) 
         end
 
 
@@ -64,6 +70,7 @@ function mPerso:new()
 
     function perso:enterFrame() -- appele la fonction render à chaque fois qu'un nouveau frame est créé
         self:render()
+
 
     end
 
@@ -74,10 +81,11 @@ function mPerso:new()
         self.vent.emitX = self.x
         self.vent.emitY = self.y
 
+
     end
     function perso:touch(e) -- appele la fonction render à chaque fois qu'un nouveau frame est créé
 
-        self.vent:start()
+
 
         if e.phase == 'began' then -- si le click commence, alors
             local vx = e.x - display.contentWidth/2 -- déclare un vecteur qui est le x du click - le centre de l'écran
@@ -88,7 +96,7 @@ function mPerso:new()
                 end
                 self.currentPos = self.currentPos + self.nextPos
                 self.endX = self.tPositions[self.currentPos]
-                print(self.endX)
+                -- print(self.endX)
             else
                 vx = 1
             end
@@ -96,26 +104,31 @@ function mPerso:new()
 
         end -- if
 
-        --    if e.phase == 'began' then
-        --        if(e.x>display.contentWidth/2) then
-        --           
-        --            if self.currentPos ~= 3 then
-        --                self.currentPos = self.currentPos + 1
-        --            end
-        --        elseif(e.x<display.contentWidth/2) then
-        --
-        --            if self.currentPos ~= 1 then
-        --                self.currentPos = self.currentPos - 1
-        --            end
-        --        else -- si usager clique au centre
-        --            print('centre')
-        --        end -- if
-        --    end -- if
 
-    end -- function
+    end -- function touch
+    function perso:preCollision(event)
+
+        local obstColl = event.other
+        print(event.other)
+        
+        if ( obstColl.currentEtat == self.currentEtat ) then
+            event.contact.isEnabled = false  --disable this specific collision
+        end
+    end
+    function perso:collision(e)
+
+        self.vent:start()
+
+    end
+
+
     perso:init()
+    -- écouteurs globaux
     Runtime:addEventListener('enterFrame', perso) 
     Runtime:addEventListener('touch', perso) 
+    Runtime:addEventListener('collision', perso)
+    -- écouteurs locaux 
+    perso:addEventListener('preCollision', perso)    
     return perso
 end -- mPerso
 return mPerso

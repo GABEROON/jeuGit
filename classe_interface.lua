@@ -11,8 +11,8 @@ function mInterface:new(perso)
 
     function interface:new() -- déclaration de la fonction init
         function circleEtatTouch:init() 
-            local circle = display.newCircle(display.contentWidth/2,display.contentHeight/2,100)
-            circle: setFillColor(1,1,0.8)
+            local circle = display.newCircle(display.contentWidth/2,display.contentHeight/2-200,100)
+            circle: setFillColor(1,1,1)
             self:insert(circle)
         end
 

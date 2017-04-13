@@ -2,19 +2,45 @@ local mObstacle={}
 
 function mObstacle:new()
     local obstacle = display.newGroup()
-    function obstacle:init()
-        --print('spawn')
+    function obstacle:init() -- init d'un seul obstacle
+        -- propriétés locales
         local width = 200 -- largeur d'un obstacle
         local height = 50 -- hauteur d'un obstacle
         local posX = {display.contentWidth/2-display.contentWidth/3,display.contentWidth/2,display.contentWidth/2+display.contentWidth/3} -- {128, 384, 640} sur ipad mini
         local posY = -50
         local colActuelle = math.random(3) -- 1 à 3
+        -- mouvement
+        self.x = posX[colActuelle]
+        self.y = posY
         
-        self.rect = display.newRect( posX[colActuelle], posY, width, height ) -- représentation graphique de l'obstacle
+        -- rectangle
+        self.rect = display.newRect( 0, 0, width, height ) -- représentation graphique de l'obstacle
         self.rect:setFillColor(1,1,1)
         self:insert(self.rect)
+        
+        -- propriétés
         self.vitesse = 15
         self.alive = true -- boolean qui sert à ne pas appeler la fonction kill si self.alive est true
+        
+        -- état
+        self.currentEtat = 2 --math.random(3)
+        self:setEtat()
+        
+        -- physX
+        physics.addBody(self, {density = 1.0, bounce = 0.3});
+        self:setLinearVelocity( 0, 1000 )
+        
+    end
+    function obstacle:setEtat()
+        if self.currentEtat == 1 then
+            self.rect:setFillColor(1,0,0)
+        elseif self.currentEtat == 2 then
+            self.rect:setFillColor(0,1,0)
+        elseif self.currentEtat == 3 then
+            self.rect:setFillColor(0,0,1)
+        else
+            print('etat a autre que 4, thats not normal')
+        end
     end
     function obstacle:enterFrame()
         if self.alive then --si l'obstacle existe
@@ -22,7 +48,7 @@ function mObstacle:new()
         end
     end
     function obstacle:render()
-        self.y = self.y + self.vitesse -- déplacement de l'obstacle selon sa vitesse
+        -- self.y = self.y + self.vitesse --------------------------- déplacement de l'obstacle selon sa vitesse ---------------------------------------------
         if self.y > display.contentHeight + self.height*2 and self.alive then -- si est en dehors de la hauteur de l'écran + sa propre hauteur, kill()
             self:kill()
         end
