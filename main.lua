@@ -9,23 +9,23 @@
 local physics = require('physics')
 
 physics.start()
-physics.setGravity(0,0)
+physics.setGravity(0,1)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------- PERSO --------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------
-local mPerso = require('classe_perso')
+local mPerso = require('classes.classe_perso')
 local perso = mPerso:new()
-
+perso:toFront()
 ------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------- OBSTACLE -----------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------
-local mObstacle = require('classe_obstacle')
+local mObstacle = require('classes.classe_obstacle')
 
 local function spawn()
     local obstacle = mObstacle:new()--self:spawn() 
 end
-timer.performWithDelay(200,spawn,-1) -- à chaque seconde, appelle la fonction spawn et répète à l'infini
+timer.performWithDelay(500,spawn,-1) -- à chaque seconde, appelle la fonction spawn et répète à l'infini
 
 
 
@@ -35,8 +35,9 @@ timer.performWithDelay(200,spawn,-1) -- à chaque seconde, appelle la fonction s
 
 
 
-local mInterface = require('classe_interface')
+local mInterface = require('classes.classe_interface')
 local interface = mInterface:new(perso)
+interface:toBack()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------ RUNTIME ET INIT -------------------------------------------------------------------
