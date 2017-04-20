@@ -1,3 +1,7 @@
+-----------------------------------------------------------------------------------------
+-- MADE BY GABRIEL CLOUTIER ON 6TH APRIL 2017
+-- classe_obstacle.lua
+---------------------------------------------------------------------------------------------
 local mObstacle={}
 
 function mObstacle:new()
@@ -44,14 +48,8 @@ function mObstacle:new()
         end
     end
     
-    function obstacle:enterFrame()
-        if self.alive then --si l'obstacle existe
-            obstacle:render()
-        end
-    end
     
     function obstacle:render()
-        -- self.y = self.y + self.vitesse --------------------------- déplacement de l'obstacle selon sa vitesse ---------------------------------------------
         if self.y > display.contentHeight + self.height*2 and self.alive then -- si est en dehors de la hauteur de l'écran + sa propre hauteur, kill()
             self:kill()
         end
@@ -60,11 +58,9 @@ function mObstacle:new()
     function obstacle:kill()
         self:removeSelf() -- appele la méthode remove self de l'objet
         self.alive = false -- mets la variable bool a false
-        --print('kill()')
     end
     
     obstacle:init()
-    Runtime:addEventListener('enterFrame', obstacle)
     return obstacle
 end
 return mObstacle

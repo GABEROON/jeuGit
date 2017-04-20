@@ -9,8 +9,7 @@ function mPerso:new()
     function perso:init() -- déclaration de la fonction init
         -- graphique 
         self.CBE = require("CBE.CBE")
-        self.CBE.listPresets()
-
+        --self.CBE.listPresets()
         self.radius = 50
         self.circle = display.newCircle(0,0,self.radius)
         self.circle: setFillColor(1,0,0) 
@@ -49,7 +48,10 @@ function mPerso:new()
 
 
     end
-
+    function perso:setInterface(interface)
+        self.interface = interface    
+    end
+    
     function perso:changerEtat()
         print('changerEtat')
         if self.currentEtat == 1 then -- 1 rouge
@@ -74,13 +76,6 @@ function mPerso:new()
         self.circle: setFillColor(tClrs[1], tClrs[2], tClrs[3])
     end
 
-
-    function perso:enterFrame() -- appele la fonction render à chaque fois qu'un nouveau frame est créé
-        self:render()
-
-
-    end
-
     function perso:render() -- est appelé à chaque enterFrame
         --self.x = self.tPositions[self.currentPos] -- place son x par rapport a currentPos à l'intérieur de tPositions
         local vx = self.endX - self.x
@@ -90,31 +85,33 @@ function mPerso:new()
     end
     
     function perso:preCollision(event)
-
         local obstColl = event.other
         --print(event.other)
-        
-        if ( obstColl.currentEtat == self.currentEtat ) then
+        if ( obstColl.currentEtat == self.currentEtat ) or self.y>display.contentHeight then
             if event.contact == nil then
-                
+                --fais rien
             else 
                 event.contact.isEnabled = false  -- désactive cette collision précise
             end
         end
     end
+    
     function perso:collision(e)
-      
+        self.interface:cancelTimer()
+       
+        print('perso',self.parent)
+        self.parent:gameOver()
         if e.phase == 'began' then
             self.vent:start()
         elseif e.phase == 'ended' then
             self.vent:stop()
         end
     end
-
+    
+    
 
     perso:init()
     -- écouteurs globaux
-    Runtime:addEventListener('enterFrame', perso) 
     Runtime:addEventListener('collision', perso)
     -- écouteurs locaux 
     perso:addEventListener('preCollision', perso)    
