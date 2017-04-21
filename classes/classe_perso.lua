@@ -44,8 +44,10 @@ function mPerso:new()
                 }
             })
         --self:changerEtat
+        
+        
         self:toFront()
-
+        
 
     end
     function perso:setInterface(interface)
@@ -53,7 +55,6 @@ function mPerso:new()
     end
     
     function perso:changerEtat()
-        print('changerEtat')
         if self.currentEtat == 1 then -- 1 rouge
             self.currentEtat = 2
            
@@ -88,25 +89,53 @@ function mPerso:new()
         local obstColl = event.other
         --print(event.other)
         if ( obstColl.currentEtat == self.currentEtat ) or self.y>display.contentHeight then
-            if event.contact == nil then
-                --fais rien
-            else 
-                event.contact.isEnabled = false  -- désactive cette collision précise
-            end
+            event.contact.isEnabled = false  -- désactive cette collision précise
+            self.interface:checkScore()            
+        else
+            self.interface:cancelTimer()
+            self.parent:gameOver()   
         end
     end
     
-    function perso:collision(e)
-        self.interface:cancelTimer()
-       
-        print('perso',self.parent)
-        self.parent:gameOver()
+    function perso:collision(e)              
         if e.phase == 'began' then
             self.vent:start()
         elseif e.phase == 'ended' then
             self.vent:stop()
         end
     end
+    
+     function perso:kill()
+        self:removeSelf() -- appele la méthode remove self de l'objet
+        Runtime:removeEventListener('collision', perso)
+        print('perso kill')
+    end
+    
+    function print_r ( t ) 
+    local print_r_cache={}
+    local function sub_print_r(t,indent)
+        if (print_r_cache[tostring(t)]) then
+            print(indent.."*"..tostring(t))
+        else
+            print_r_cache[tostring(t)]=true
+            if (type(t)=="table") then
+                for pos,val in pairs(t) do
+                    if (type(val)=="table") then
+                        print(indent.."["..pos.."] => "..tostring(t).." {")
+                        sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
+                        print(indent..string.rep(" ",string.len(pos)+6).."}")
+                    else
+                        print(indent.."["..pos.."] => "..tostring(val))
+                    end
+                end
+            else
+                print(indent..tostring(t))
+            end
+        end
+    end
+    sub_print_r(t,"  ")
+    end
+
     
     
 
@@ -115,6 +144,7 @@ function mPerso:new()
     Runtime:addEventListener('collision', perso)
     -- écouteurs locaux 
     perso:addEventListener('preCollision', perso)    
+     
     return perso
 end -- mPerso
 return mPerso

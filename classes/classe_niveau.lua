@@ -21,15 +21,16 @@ function mNiveau:new()
         local obstacle = mObstacle:new()--self:spawn()
         niveau:insert(obstacle)
     end
-    local timerObst = timer.performWithDelay(200,spawn,-1) -- à chaque seconde, appelle la fonction spawn et répète à l'infini
+    
+    local timerRythm = 300
+    
+    local timerObst = timer.performWithDelay(timerRythm,spawn,-1) -- à chaque seconde, appelle la fonction spawn et répète à l'infini
 
     local mInterface = require('classes.classe_interface')
-    local interface = mInterface:new(perso)
+    local interface = mInterface:new(perso, obstacle)
     perso:setInterface(interface)
     niveau:insert(interface)
-    
-    print('niveau', self)
-    
+        
     function niveau:enterFrame()
         local function recurseRender(obj)
             if obj.numChildren ~= nil then
@@ -45,10 +46,13 @@ function mNiveau:new()
     end
     
     function niveau:gameOver()
-        print('game over')
-        Runtime:removeEventListener('enterframe', self)
+        --Runtime:removeEventListener('touch', interface)
+        --Runtime:removeEventListener('enterframe', self)
+        --interface.circleEtatTouch:removeEventListener('touch', interface.circleEtatTouch)
+        
         
         timer.cancel(timerObst) 
+        
         local function recurseKill(obj)
             if obj.numChildren ~= nil then
                for i=obj.numChildren, 1, -1 do
@@ -59,8 +63,11 @@ function mNiveau:new()
                obj:Kill() 
             end
         end
+        self:removeSelf()
+        Runtime:removeEventListener('enterFrame', niveau)
         recurseKill(self)
-        self:removeSelf()        
+        
+        
     end
     
     Runtime:addEventListener('enterFrame', niveau) -- le seul enterframe du jeu, gère les render de obstacle et personnage avec une fonction récursive

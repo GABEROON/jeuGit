@@ -27,7 +27,7 @@ function mObstacle:new()
         self.alive = true -- boolean qui sert à ne pas appeler la fonction kill si self.alive est true
         
         -- état
-        self.currentEtat = math.random(3)
+        self.currentEtat =  1 -- math.random(3)
         self:setEtat()
         
         -- physX
@@ -51,13 +51,14 @@ function mObstacle:new()
     
     function obstacle:render()
         if self.y > display.contentHeight + self.height*2 and self.alive then -- si est en dehors de la hauteur de l'écran + sa propre hauteur, kill()
-            self:kill()
+            --self:kill()
         end
     end
     
     function obstacle:kill()
         self:removeSelf() -- appele la méthode remove self de l'objet
         self.alive = false -- mets la variable bool a false
+        print('kill')
     end
     
     obstacle:init()
