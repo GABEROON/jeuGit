@@ -9,8 +9,8 @@ function mCircleEtatTouch:new(perso)
     local circleEtatTouch = display.newGroup() -- créer un nouveau display pour le cercle de collision
 
     function circleEtatTouch:init() 
-        local circle = display.newCircle(display.contentWidth/2,display.contentHeight/2+400,100)
-        circle: setFillColor(1,1,0.01)
+        local circle = display.newCircle(display.contentWidth/2,display.contentHeight/2+400,250)
+        circle: setFillColor(0.5,0,0)
         --circle.alpha = 0
         self:insert(circle)
         
@@ -28,12 +28,9 @@ function mCircleEtatTouch:new(perso)
         end -- if began
     end -- touch
 
-    function circleEtatTouch:Kill()
+    function circleEtatTouch:kill()
         self:removeEventListener('touch', circleEtatTouch)   
-        self:removeSelf()
-        
-       
-        
+        self:removeSelf()    
     end
 
     function print_r ( t ) 

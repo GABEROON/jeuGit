@@ -29,9 +29,9 @@ function mPerso:new()
         self.currentEtat = 1
 
         --physX
-        physics.addBody(self, {density = 1, radius = self.radius, bounce = 1});
+        physics.addBody(self, {density = 1, radius = self.radius-10, bounce = 2 });
         self.gravityScale = 0
-        -- physics.setDrawMode('hybrid');
+        
         
         self.vent = self.CBE.newVent({
                 preset = "fountain",
@@ -89,16 +89,33 @@ function mPerso:new()
         local obstColl = event.other
         --print(event.other)
         if ( obstColl.currentEtat == self.currentEtat ) or self.y>display.contentHeight then
-            event.contact.isEnabled = false  -- désactive cette collision précise
-            self.interface:checkScore()            
+            if event.contact ~= null then
+                event.contact.isEnabled = false  -- désactive cette collision précise
+                self.interface:checkScore()  
+            end
         else
+            self.interface:setEvent(event)
             self.interface:cancelTimer()
-            self.parent:gameOver()   
+            self.gravityScale = 50
+            local overOnCollTimer = function() 
+                
+                if self.parent ~= null then
+                    
+                    return self.parent:gameOver() 
+                else
+                    print('bonjour les amis, parent est null')
+                end
+                
+            end
+            timer.performWithDelay( 3000, overOnCollTimer, 1 ) 
+            
+            --self.parent:gameOver()   
         end
     end
     
     function perso:collision(e)              
         if e.phase == 'began' then
+            
             self.vent:start()
         elseif e.phase == 'ended' then
             self.vent:stop()
@@ -106,6 +123,8 @@ function mPerso:new()
     end
     
      function perso:kill()
+        
+        self.vent:stop() -- arrete les particules à la fin du jeu
         self:removeSelf() -- appele la méthode remove self de l'objet
         Runtime:removeEventListener('collision', perso)
         print('perso kill')

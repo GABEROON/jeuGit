@@ -6,7 +6,7 @@
 -----------------------------------------------------------------------------------------
 local mInterface = {}
 function mInterface:new(perso)
-    local mCircleEtatTouch = require('classes.classe_CircleEtatTouch')
+    local mCircleEtatTouch = require('classes.classe_circleetattouch')
     local circleEtatTouch = mCircleEtatTouch:new(perso, obstacle)
     
     local interface = display.newGroup() -- créer un nouveau display groupe pour le interface
@@ -21,6 +21,7 @@ function mInterface:new(perso)
         --score
         self.startScore = 0
         self.currentScore = self.startScore
+        self.finalScore = 0
        
         self.inArow = 1
         self.timerInc = 1
@@ -28,8 +29,11 @@ function mInterface:new(perso)
         self.tScoreMultiplier = {5,10,20,50,100,500,1000,1500,5000,10000}
         self.scoreObst = self.tScoreMultiplier[self.scoreCurrentMultiplier]
         
-        self.scText = display.newText('Score:'..self.currentScore,125,50,native.system)
+        
+        
+        interface.scText = display.newText('Score:'..interface.currentScore,125,50,native.system)
         self.scText:setFillColor( 1, 1, 1 )
+        self:insert(self.scText)
         
         local function scoreTimer()
             self.currentScore = self.currentScore + 1
@@ -42,9 +46,19 @@ function mInterface:new(perso)
         
         
     end -- interface:new
-    
+    function interface:setEvent(event)
+        
+    end
     function interface:cancelTimer()
+       
+        self.finalScore = self.currentScore
         timer.cancel(self.timerScore) 
+        if self.numChildren < 3 then -- si il y a seulement deux enfants
+            self.scFtext = display.newText('Score Final: '.. self.finalScore, perso.tPositions[perso.currentPos], display.contentHeight/2)
+            self:insert(self.scFtext)
+        end
+            
+        
     end
     
     function interface:resetInArow()
@@ -54,29 +68,30 @@ function mInterface:new(perso)
     function interface:checkScore()
         --print('checkScore called')
         self.inArow = self.inArow + 1/5
-        print('self.inArow = ', self.inArow)
-        self.timerInArow = timer.performWithDelay(1000, resetInArow, 1)
-        if self.inArow >= 1 and self.inArow >= 5 then
+        -- print('self.inArow = ', self.inArow)
+        self.timerInArow = timer.performWithDelay(6000, resetInArow, 1)
+        if self.inArow >= 1 and self.inArow <= 5 then
            self.scoreCurrentMultiplier = 1 
-        elseif self.inArow >= 6 and self.inArow >= 10 then
+        elseif self.inArow >= 6 and self.inArow <= 10 then
            self.scoreCurrentMultiplier = 2
-        elseif self.inArow >= 11 and self.inArow >= 20 then
+        elseif self.inArow >= 11 and self.inArow <= 20 then
            self.scoreCurrentMultiplier = 3 
-        elseif self.inArow >= 21 and self.inArow >= 40 then
+        elseif self.inArow >= 21 and self.inArow <= 40 then
            self.scoreCurrentMultiplier = 4
-        elseif self.inArow >= 41 and self.inArow >= 70 then
+        elseif self.inArow >= 41 and self.inArow <= 70 then
            self.scoreCurrentMultiplier = 5
-        elseif self.inArow >= 71 and self.inArow >= 90 then
+        elseif self.inArow >= 71 and self.inArow <= 90 then
            self.scoreCurrentMultiplier = 6
-        elseif self.inArow >= 91 and self.inArow >= 110 then
+        elseif self.inArow >= 91 and self.inArow <= 110 then
            self.scoreCurrentMultiplier = 7
-        elseif self.inArow >= 111 and self.inArow >= 130 then
+        elseif self.inArow >= 111 and self.inArow <= 130 then
            self.scoreCurrentMultiplier = 8
-        elseif self.inArow >= 131 and self.inArow >= 150 then
+        elseif self.inArow >= 131 and self.inArow <= 150 then
            self.scoreCurrentMultiplier = 9
-        elseif self.inArow >= 151 and self.inArow >= 170 then
+        elseif self.inArow >= 151 and self.inArow <= 170 then
            self.scoreCurrentMultiplier = 10 
         end
+        self.scoreObst = self.tScoreMultiplier[self.scoreCurrentMultiplier]
         interface:scoreAdd()
     end
     
@@ -104,10 +119,11 @@ function mInterface:new(perso)
         end -- if
     end
     
-    function interface:Kill()
+    function interface:kill()
+        print('interface kill')
         self:removeSelf() 
         Runtime:removeEventListener('touch', interface) -- fonction qui va éventuellement appeler les render récursivement dans la classe niveau
-        --circleEtatTouch:Kill() -- appelle la méthode kill de là parce que le recurseKill de niveau ne se rend pas à circleEtatTouch
+        circleEtatTouch:kill() -- appelle la méthode kill de là parce que le recurseKill de niveau ne se rend pas à circleEtatTouch
     end
 
 

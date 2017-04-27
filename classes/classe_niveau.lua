@@ -17,14 +17,41 @@ function mNiveau:new()
 
     local mObstacle = require('classes.classe_obstacle')
 
+    
+    
+    
+    local timerRythm = 400
+    local timerObst
+    
     local function spawn()
         local obstacle = mObstacle:new()--self:spawn()
+        
+        -- print('timer rythm en dedans', timerRythm)
         niveau:insert(obstacle)
+    
     end
     
-    local timerRythm = 300
+    local function update()
+        if timerObst ~= nil then
+            timer.cancel(timerObst)    
+        end
+        if timerRythm >= 200 then
+            timerRythm = timerRythm - 1
+        end
+        
+       
+        timerObst = timer.performWithDelay(timerRythm,function () spawn() update()  end,-1) -- à chaque seconde, appelle la fonction spawn et répète à l'infini    
+    end
     
-    local timerObst = timer.performWithDelay(timerRythm,spawn,-1) -- à chaque seconde, appelle la fonction spawn et répète à l'infini
+    update()
+    
+    
+    
+    
+   
+    
+    self.gameOverBool = false
+    
 
     local mInterface = require('classes.classe_interface')
     local interface = mInterface:new(perso, obstacle)
@@ -35,39 +62,53 @@ function mNiveau:new()
         local function recurseRender(obj)
             if obj.numChildren ~= nil then
                for i=obj.numChildren, 1, -1 do
-                   recurseRender(obj[i]) 
+                   recurseRender(obj[i])
+                    
                 end -- for
             end -- if
             if obj.render ~= nil then   -- est ce que la methode existe, si oui, appele là
                obj:render() 
             end
         end
+        
         recurseRender(self)
     end
     
     function niveau:gameOver()
-        --Runtime:removeEventListener('touch', interface)
-        --Runtime:removeEventListener('enterframe', self)
-        --interface.circleEtatTouch:removeEventListener('touch', interface.circleEtatTouch)
         
-        
+        self.gameOverBool = true
+        -- print('numChildren debut', self.numChildren)
         timer.cancel(timerObst) 
-        
+--        perso:kill()
+--        interface:kill()
         local function recurseKill(obj)
             if obj.numChildren ~= nil then
                for i=obj.numChildren, 1, -1 do
                    recurseKill(obj[i]) 
                 end -- for
             end -- if
-            if obj.Kill ~= nil then   -- est ce que la methode existe, si oui, appele là
-               obj:Kill() 
+            if obj.kill ~= nil then   -- est ce que la methode existe, si oui, appele là
+               obj:kill() 
             end
         end
-        self:removeSelf()
+        
+        --self:removeSelf()
+        Runtime:removeEventListener('touch', interface)
+        Runtime:removeEventListener('enterframe', self)
         Runtime:removeEventListener('enterFrame', niveau)
         recurseKill(self)
-        
-        
+        -- print('numChildren fin', self.numChildren)
+        local againTimer = function() return self:startAgain() end
+        timer.performWithDelay( 1100, againTimer, 1 ) 
+    end -- gamveOver end
+    
+    function niveau:startAgain()
+        if self.gameOverBool then
+           --  print('start again')
+            mNiveau:new()
+        else
+            
+        end
     end
     
     Runtime:addEventListener('enterFrame', niveau) -- le seul enterframe du jeu, gère les render de obstacle et personnage avec une fonction récursive
